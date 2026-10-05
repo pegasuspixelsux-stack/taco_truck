@@ -13,6 +13,15 @@ export function formatCurrency(amount: number, currency = "USD") {
   }).format(amount);
 }
 
+/** Menu prices keep their cents ($3.75), unlike the whole-dollar `formatCurrency`. */
+export function formatPrice(amount: number, currency = "USD") {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+  }).format(amount);
+}
+
 export function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }

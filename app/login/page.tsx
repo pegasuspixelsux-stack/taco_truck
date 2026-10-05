@@ -64,7 +64,7 @@ export default function LoginPage() {
         className="relative w-full max-w-md"
       >
         <Link href="/" className="mb-10 block text-center text-lg font-bold tracking-tight">
-          Super<span className="text-slate-500">Dealio</span>
+          taco<span className="text-slate-500">_truck</span>
         </Link>
 
         <div className="rounded-3xl border border-ink/10 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl">
@@ -130,7 +130,7 @@ export default function LoginPage() {
         </div>
 
         <p className="mt-8 text-center text-sm text-slate-400">
-          {isLogin ? "New to SuperDealio?" : "Already have an account?"}{" "}
+          {isLogin ? "New to taco_truck?" : "Already have an account?"}{" "}
           <button
             type="button"
             onClick={() => {

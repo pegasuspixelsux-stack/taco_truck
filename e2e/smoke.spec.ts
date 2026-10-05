@@ -2,22 +2,39 @@ import { expect, test } from "@playwright/test";
 
 test("public homepage renders hero, listings and footer", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Drive something extraordinary." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Featured inventory" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Eat something extraordinary." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Menu", exact: true })).toBeVisible();
   await expect(page.getByRole("contentinfo")).toBeVisible();
   await page.screenshot({ path: "test-results/home.png", fullPage: true });
 });
 
-test("search filters the listing grid", async ({ page }) => {
+test("category pills filter the menu grid", async ({ page }) => {
   await page.goto("/");
-  await page.getByLabel("Search make or model").fill("porsche");
-  await expect(page.getByRole("heading", { name: /Porsche 911/ })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Tesla/ })).toHaveCount(0);
+  await page.getByRole("navigation", { name: "Menu categories" }).getByRole("button", { name: "Postres" }).click();
+  await expect(page.getByRole("heading", { name: /Churros/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Tamarindo/ })).toHaveCount(0);
 });
 
-test("login page is reachable from the navbar", async ({ page }) => {
+test("menu cards add items to the cart", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Log in" }).click();
+  const button = page.getByRole("button", { name: "Add Agua de Tamarindo to cart" });
+  await button.click();
+  await expect(button).toHaveAttribute("title", "Added");
+});
+
+test("navbar search filters the menu", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Search the menu" }).click();
+  await page.getByRole("searchbox", { name: "Search the menu" }).fill("birria");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\?q=birria/);
+  await expect(page.getByRole("heading", { name: /Birria Tacos/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Tamarindo/ })).toHaveCount(0);
+});
+
+test("admin login is reachable from the footer", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("contentinfo").getByRole("link", { name: "Admin login" }).click();
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
 });

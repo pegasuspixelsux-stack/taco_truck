@@ -1,14 +1,17 @@
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MENU_CATEGORIES } from "@/lib/sample-menu";
 
 const columns = [
   {
-    title: "Browse",
+    title: "Menu",
     links: [
-      { label: "All vehicles", href: "/#inventory" },
-      { label: "SUVs", href: "/?type=SUV#inventory" },
-      { label: "Sedans", href: "/?type=Sedan#inventory" },
-      { label: "Trucks", href: "/?type=Truck#inventory" },
+      { label: "All items", href: "/#inventory" },
+      ...MENU_CATEGORIES.map((category) => ({
+        label: category,
+        href: `/?type=${encodeURIComponent(category)}#inventory`,
+      })),
     ],
   },
   {
@@ -19,22 +22,15 @@ const columns = [
       { label: "Contact", href: "/" },
     ],
   },
-  {
-    title: "Team",
-    links: [
-      { label: "Staff login", href: "/login" },
-      { label: "Dashboard", href: "/dashboard" },
-    ],
-  },
 ];
 
 export function Footer() {
   return (
     <footer className="border-t border-slate-800/80">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-[2fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-[2fr_1fr_1fr]">
         <div>
           <p className="text-lg font-bold tracking-tight text-slate-100">
-            Super<span className="text-slate-500">Dealio</span>
+            taco<span className="text-slate-500">_truck</span>
           </p>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
             Exceptional vehicles, transparent pricing and a buying experience that respects your
@@ -62,9 +58,18 @@ export function Footer() {
       <div className="border-t border-slate-800/80">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 sm:flex-row">
           <p className="text-xs text-slate-500">
-            © {new Date().getFullYear()} SuperDealio. All rights reserved.
+            © {new Date().getFullYear()} taco_truck. All rights reserved.
           </p>
-          <ThemeToggle />
+          <div className="flex items-center gap-4">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-500 transition-colors duration-200 hover:text-slate-300"
+            >
+              <Lock className="size-3" />
+              Admin login
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </footer>

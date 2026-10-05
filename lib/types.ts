@@ -56,7 +56,7 @@ export interface DealershipSettings {
 }
 
 export const DEFAULT_SETTINGS: DealershipSettings = {
-  name: "SuperDealio",
+  name: "taco_truck",
   currency: "USD",
   email: "",
   phone: "",
@@ -65,3 +65,17 @@ export const DEFAULT_SETTINGS: DealershipSettings = {
   notifyStatusChange: false,
   weeklyDigest: true,
 };
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  image: string | null;
+}
+
+export interface CartLine {
+  item: MenuItem;
+  quantity: number;
+}

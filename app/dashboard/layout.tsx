@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <aside className="flex shrink-0 flex-col border-b border-slate-800/80 bg-slate-950 md:sticky md:top-0 md:h-dvh md:w-64 md:border-r md:border-b-0">
         <div className="flex h-16 items-center px-6">
           <Link href="/" className="text-lg font-bold tracking-tight">
-            Super<span className="text-slate-500">Dealio</span>
+            taco<span className="text-slate-500">_truck</span>
           </Link>
         </div>
 

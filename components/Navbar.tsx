@@ -1,30 +1,42 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
-import { buttonStyles } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Search, X } from "lucide-react";
+import { Input } from "@/components/ui/field";
+import { MENU_CATEGORIES } from "@/lib/sample-menu";
 import { cn } from "@/lib/utils";
 
 const categories = [
   { label: "All", href: "/#inventory" },
-  { label: "SUVs", href: "/?type=SUV#inventory" },
-  { label: "Sedans", href: "/?type=Sedan#inventory" },
-  { label: "Trucks", href: "/?type=Truck#inventory" },
-  { label: "Coupes", href: "/?type=Coupe#inventory" },
+  ...MENU_CATEGORIES.map((category) => ({
+    label: category,
+    href: `/?type=${encodeURIComponent(category)}#inventory`,
+  })),
 ];
 
+const iconButton = cn(
+  "rounded-xl p-2.5 text-slate-400 transition-[background-color,color,transform] duration-200",
+  "hover:bg-ink/5 hover:text-slate-100 active:scale-[0.95]",
+);
+
 export function Navbar() {
-  const focusSearch = () => {
-    const input = document.getElementById("search-input");
-    input?.scrollIntoView({ behavior: "smooth", block: "center" });
-    input?.focus({ preventScroll: true });
+  const router = useRouter();
+  const [searching, setSearching] = useState(false);
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = String(new FormData(event.currentTarget).get("q") ?? "").trim();
+    router.push(query ? `/?q=${encodeURIComponent(query)}#inventory` : "/#inventory");
+    setSearching(false);
   };
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-6">
-        <Link href="/" className="text-lg font-bold tracking-tight text-slate-100">
-          Super<span className="text-slate-500">Dealio</span>
+        <Link href="/" className="shrink-0 text-lg font-bold tracking-tight text-slate-100">
+          taco<span className="text-slate-500">_truck</span>
         </Link>
 
         <nav aria-label="Categories" className="hidden items-center gap-1 md:flex">
@@ -39,21 +51,37 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={focusSearch}
-            aria-label="Search vehicles"
-            className={cn(
-              "rounded-xl p-2.5 text-slate-400 transition-[background-color,color,transform] duration-200",
-              "hover:bg-ink/5 hover:text-slate-100 active:scale-[0.95]",
-            )}
-          >
-            <Search className="size-5" />
-          </button>
-          <Link href="/login" className={buttonStyles("primary", "sm")}>
-            Log in
-          </Link>
+        <div className="flex min-w-0 items-center gap-2">
+          {searching ? (
+            <form role="search" onSubmit={submit} className="flex min-w-0 items-center gap-1">
+              <Input
+                name="q"
+                type="search"
+                autoFocus
+                placeholder="Search the menu"
+                aria-label="Search the menu"
+                onKeyDown={(event) => event.key === "Escape" && setSearching(false)}
+                className="h-10 w-40 min-w-0 shrink sm:w-56"
+              />
+              <button
+                type="button"
+                onClick={() => setSearching(false)}
+                aria-label="Close search"
+                className={iconButton}
+              >
+                <X className="size-5" />
+              </button>
+            </form>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSearching(true)}
+              aria-label="Search the menu"
+              className={iconButton}
+            >
+              <Search className="size-5" />
+            </button>
+          )}
         </div>
       </div>
     </header>
