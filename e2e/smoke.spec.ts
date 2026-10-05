@@ -10,7 +10,10 @@ test("public homepage renders hero, listings and footer", async ({ page }) => {
 
 test("category pills filter the menu grid", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Menu categories" }).getByRole("button", { name: "Postres" }).click();
+  await page
+    .getByRole("navigation", { name: "Menu categories" })
+    .getByRole("button", { name: "Postres" })
+    .click();
   await expect(page.getByRole("heading", { name: /Churros/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Tamarindo/ })).toHaveCount(0);
 });
@@ -20,6 +23,17 @@ test("menu cards add items to the cart", async ({ page }) => {
   const button = page.getByRole("button", { name: "Add Agua de Tamarindo to cart" });
   await button.click();
   await expect(button).toHaveAttribute("title", "Added");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("tapping a card opens its detail sheet", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Carne Asada Taco", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Carne Asada Taco" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Increase quantity" }).click();
+  await dialog.getByRole("button", { name: "Add to Cart" }).click();
+  await expect(dialog).toHaveCount(0);
 });
 
 test("navbar search filters the menu", async ({ page }) => {

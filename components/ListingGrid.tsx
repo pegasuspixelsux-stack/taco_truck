@@ -1,6 +1,9 @@
 "use client";
 
+import { useCallback, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { MenuItemCard } from "@/components/MenuItemCard";
+import { MenuItemDetail } from "@/components/MenuItemDetail";
 import { MENU_CATEGORIES } from "@/lib/sample-menu";
 import type { MenuItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -18,6 +21,9 @@ export function ListingGrid({
   currency: string;
   onAddToCart: (item: MenuItem, quantity: number) => void;
 }) {
+  const [selected, setSelected] = useState<MenuItem | null>(null);
+  const closeDetail = useCallback(() => setSelected(null), []);
+
   return (
     <section id="inventory" className="mx-auto w-full max-w-7xl scroll-mt-24 px-6 py-16 md:py-24">
       <div className="mb-8 flex items-end justify-between gap-6">
@@ -42,15 +48,23 @@ export function ListingGrid({
               onClick={() => onCategoryChange(value)}
               aria-pressed={category === value}
               className={cn(
-                "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium whitespace-nowrap",
+                "relative shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium whitespace-nowrap",
                 "transition-[background-color,color,border-color,transform] duration-200 ease-out-expo active:scale-[0.96]",
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400",
                 category === value
-                  ? "border-transparent bg-slate-100 text-slate-950"
+                  ? "border-transparent text-slate-950"
                   : "border-slate-800/80 bg-ink/5 text-slate-400 hover:bg-ink/10 hover:text-slate-100",
               )}
             >
-              {label}
+              {/* The active fill slides between pills instead of blinking. */}
+              {category === value && (
+                <motion.span
+                  layoutId="active-category"
+                  transition={{ type: "spring", stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 rounded-full bg-slate-100"
+                />
+              )}
+              <span className="relative">{label}</span>
             </button>
           ),
         )}
@@ -61,12 +75,28 @@ export function ListingGrid({
           No menu items match your search.
         </p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((item) => (
-            <MenuItemCard key={item.id} item={item} currency={currency} onAddToCart={onAddToCart} />
-          ))}
+        <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <AnimatePresence mode="popLayout">
+            {items.map((item, index) => (
+              <MenuItemCard
+                key={item.id}
+                item={item}
+                index={index}
+                currency={currency}
+                onOpen={setSelected}
+                onAddToCart={onAddToCart}
+              />
+            ))}
+          </AnimatePresence>
         </div>
       )}
+
+      <MenuItemDetail
+        item={selected}
+        currency={currency}
+        onClose={closeDetail}
+        onAddToCart={onAddToCart}
+      />
     </section>
   );
 }

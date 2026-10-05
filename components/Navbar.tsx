@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/field";
 import { MENU_CATEGORIES } from "@/lib/sample-menu";
@@ -20,6 +21,8 @@ const iconButton = cn(
   "rounded-xl p-2.5 text-slate-400 transition-[background-color,color,transform] duration-200",
   "hover:bg-ink/5 hover:text-slate-100 active:scale-[0.95]",
 );
+
+const fade = { duration: 0.18, ease: [0.16, 1, 0.3, 1] } as const;
 
 export function Navbar() {
   const router = useRouter();
@@ -52,36 +55,52 @@ export function Navbar() {
         </nav>
 
         <div className="flex min-w-0 items-center gap-2">
-          {searching ? (
-            <form role="search" onSubmit={submit} className="flex min-w-0 items-center gap-1">
-              <Input
-                name="q"
-                type="search"
-                autoFocus
-                placeholder="Search the menu"
-                aria-label="Search the menu"
-                onKeyDown={(event) => event.key === "Escape" && setSearching(false)}
-                className="h-10 w-40 min-w-0 shrink sm:w-56"
-              />
-              <button
+          <AnimatePresence mode="wait" initial={false}>
+            {searching ? (
+              <motion.form
+                key="search"
+                role="search"
+                onSubmit={submit}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 8 }}
+                transition={fade}
+                className="flex min-w-0 items-center gap-1"
+              >
+                <Input
+                  name="q"
+                  type="search"
+                  autoFocus
+                  placeholder="Search the menu"
+                  aria-label="Search the menu"
+                  onKeyDown={(event) => event.key === "Escape" && setSearching(false)}
+                  className="h-10 w-40 min-w-0 shrink sm:w-56"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearching(false)}
+                  aria-label="Close search"
+                  className={iconButton}
+                >
+                  <X className="size-5" />
+                </button>
+              </motion.form>
+            ) : (
+              <motion.button
+                key="open"
                 type="button"
-                onClick={() => setSearching(false)}
-                aria-label="Close search"
+                onClick={() => setSearching(true)}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={fade}
+                aria-label="Search the menu"
                 className={iconButton}
               >
-                <X className="size-5" />
-              </button>
-            </form>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setSearching(true)}
-              aria-label="Search the menu"
-              className={iconButton}
-            >
-              <Search className="size-5" />
-            </button>
-          )}
+                <Search className="size-5" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </header>
