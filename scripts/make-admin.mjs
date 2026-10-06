@@ -1,6 +1,6 @@
 // Promotes an existing account to admin (creates its profile if missing).
 //
-// Usage: node scripts/make-admin.mjs <service-account.json> <email>
+// Usage: node scripts/make-admin.mjs <service-account.json> <email-or-uid>
 // The person must have signed up at /login first. New sign-ups are "pending"
 // until an admin approves them, so this is how the very first admin is made.
 
@@ -9,15 +9,16 @@ import { cert, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
-const [keyPath, email] = process.argv.slice(2);
-if (!keyPath || !email) {
-  console.error("Usage: node scripts/make-admin.mjs <service-account.json> <email>");
+const [keyPath, who] = process.argv.slice(2);
+if (!keyPath || !who) {
+  console.error("Usage: node scripts/make-admin.mjs <service-account.json> <email-or-uid>");
   process.exit(1);
 }
 
 initializeApp({ credential: cert(JSON.parse(readFileSync(keyPath, "utf8"))) });
 
-const user = await getAuth().getUserByEmail(email);
+const user = who.includes("@") ? await getAuth().getUserByEmail(who) : await getAuth().getUser(who);
+const email = user.email ?? who;
 const ref = getFirestore().collection("users").doc(user.uid);
 const existing = await ref.get();
 
